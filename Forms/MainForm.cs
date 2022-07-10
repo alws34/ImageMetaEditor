@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 using TagLib;
+using System.Media;
+using ImageMetaEditor.UserControls;
 
 namespace ImageMetaEditor.Forms
 {
@@ -17,6 +19,7 @@ namespace ImageMetaEditor.Forms
     {
         private static readonly List<string> ImageExtensions = new List<string> { ".JPG", ".JPEG", ".JPE", ".BMP", ".GIF", ".PNG" };
         private List<string> images_path_lst = new List<string>();
+        private TagLib.File image_file = TagLib.File.Create("sample_image.jpg");
         public MainForm()
         {
             InitializeComponent();
@@ -46,8 +49,6 @@ namespace ImageMetaEditor.Forms
             toolTip.ShowAlways = true;
             if (textBoxPath.Text != "" && Directory.Exists(textBoxPath.Text))
                 LoadDirectory(textBoxPath.Text);
-            else
-                MessageBox.Show("Select Directory!!");
         }
 
         public void LoadDirectory(string Dir)
@@ -96,7 +97,7 @@ namespace ImageMetaEditor.Forms
                     UpdateProgress();
                 }
             }
-            progressBar.Value = 0;  
+            //progressBar.Value = 0;
         }
 
         private void UpdateProgress()
@@ -112,12 +113,12 @@ namespace ImageMetaEditor.Forms
 
         private void treeView_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            TreeView? t = sender as TreeView;
-            if (t == null)
+            TreeView? tree_view = sender as TreeView;
+            if (tree_view == null)
                 return;
 
-            TreeNode tn = t.SelectedNode;
-            string node_text = tn.Text;
+            TreeNode tree_node = tree_view.SelectedNode;
+            string node_text = tree_node.Text;
             if (ImageExtensions.Contains(Path.GetExtension(node_text).ToUpperInvariant()))
                 displayImage(textBoxPath.Text + "\\" + node_text);
 
@@ -125,25 +126,48 @@ namespace ImageMetaEditor.Forms
 
         private void displayImage(string image_path)
         {
-            pictureBox.Image = Image.FromFile(image_path);
-            pictureBox.SizeMode = PictureBoxSizeMode.StretchImage;
+            using (FileStream fs = new FileStream(image_path, FileMode.Open, FileAccess.Read))
+            {
+                pictureBox.Image = Image.FromStream(fs);
+                pictureBox.SizeMode = PictureBoxSizeMode.StretchImage;
+            }
+            image_file = TagLib.File.Create(image_path);
+            CreateEditField(image_file);
+        }
+       
+        private void CreateEditField(TagLib.File image_file)
+        {
+            string title = checkNull(image_file.Tag.Title);
+            string description = checkNull(image_file.Tag.Description);
+            string comment = checkNull(image_file.Tag.Comment);
+            DateTime? date = checkNull(image_file.Tag.DateTagged);
+            tableLayoutPanel.Controls.Clear();
+            //tableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Absolute,65));//add more rows.
+            tableLayoutPanel.Controls.Add(new DataFieldUC("Title", title, "The title is most commonly the name of the image/song/episode or movie."),1,1);
+            tableLayoutPanel.Controls.Add(new DataFieldUC("Description", description,"A brief description of the object.\nThis is most common and usefull for movies"),1,2);
+            tableLayoutPanel.Controls.Add(new DataFieldUC("Comments",comment, "This field should be used to store user notes and comments. There is no constraint on the text stored here."),1,3);
+            tableLayoutPanel.Controls.Add(new DataFieldUC("Date Tagged", date, "the date at which the tag has beenwritten"), 1, 4);
 
-            //var tfile = TagLib.File.Create(image_path);
-            //var data_tags = tfile.Tag;// as TagLib.Image.CombinedImageTag;
-            //if (data_tags != null)
-            //{
-
-            //}
+            //image_file.Tag.DateTagged = DateTime.Now;
+            //image_file.Save();
+        }
+        private string checkNull(string str)
+        {
+            if (string.IsNullOrWhiteSpace(str))
+                return "";
+            return str;
         }
 
-        private void editImage(string image_path)
+        private DateTime? checkNull(DateTime? date)
         {
-            var tfile = TagLib.File.Create(image_path);
-            var data_tags = tfile.Tag;// as TagLib.Image.CombinedImageTag;
-            if (data_tags != null)
-            {
+            if (!date.HasValue)
+                return DateTime.Now;
+            return date;
+        }
 
-            }
+        private void btnSaveData_Click(object sender, EventArgs e)
+        {
+            image_file.Save();
         }
     }
 }
