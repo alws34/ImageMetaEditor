@@ -10,6 +10,7 @@ using System.Windows.Forms;
 
 namespace ImageMetaEditor.Forms
 {
+    //V0.1
     public partial class MainForm : Form
     {
         public static readonly List<string> ImageExtensions = new List<string> { ".JPG", ".JPEG", ".JPE", ".BMP", ".GIF", ".PNG" };
