@@ -18,22 +18,25 @@ namespace ImageMetaEditor.Forms
     public partial class MainForm : Form
     {
         private static readonly List<string> ImageExtensions = new List<string> { ".JPG", ".JPEG", ".JPE", ".BMP", ".GIF", ".PNG" };
-        private TagLib.File image_file = TagLib.File.Create("sample_image.jpg");
+        private TagLib.File current_image = TagLib.File.Create("sample_image.jpg");
         private enum TABS
         {
             ImageTab,
             AboutTab
         };
+
         public MainForm()
         {
             InitializeComponent();
             tabControl1.SelectedIndexChanged += ResizeWindow;
             SetAbout();
         }
-        private void SetAbout(string version = "0.6")
+
+        private void SetAbout(string version = "0.6.1")
         {
             lblVersion.Text = $"Version: {version}";
-            lblAuthor.Text = "Alon W";
+            lblAuthor.Text = "alws34";
+            richTextBox1.Text = $"";
         }
 
         public void LoadDirectory(string Dir)
@@ -81,7 +84,6 @@ namespace ImageMetaEditor.Forms
                     UpdateProgress();
                 }
             }
-            progressBar.Value = 0;
         }
 
         private void UpdateProgress()
@@ -102,32 +104,42 @@ namespace ImageMetaEditor.Forms
                 pictureBox.Image = Image.FromStream(fs);
                 pictureBox.SizeMode = PictureBoxSizeMode.StretchImage;
             }
-            image_file = TagLib.File.Create(image_path);
-            imageFieldsHandler(image_file);
+            current_image = TagLib.File.Create(image_path);
+            imageFieldsHandler(current_image);
         }
 
         private void imageFieldsHandler(TagLib.File image_file)
         {
             //Handels all editable fields.
             tableLayoutPanel.Controls.Clear();
+            SetFields();
+        }
 
-            string title = checkNull(image_file.Tag.Title);
-            string description = checkNull(image_file.Tag.Description);
-            string comment = checkNull(image_file.Tag.Comment);
-            DateTime? date = checkNull(image_file.Tag.DateTagged);
+        private void SetFields()
+        {
+            tableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.AutoSize, 33)); //row 5
+
+            string filename = checkNull(Path.GetFileNameWithoutExtension(current_image.Name));
+            string title = checkNull(current_image.Tag.Title);
+            string description = checkNull(current_image.Tag.Description);
+            string comment = checkNull(current_image.Tag.Comment);
+            DateTime? date = checkNull(current_image.Tag.DateTagged);
 
             //tableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Absolute,65));//add more rows.
+            DataFieldUC filenameUC = new DataFieldUC("File Name", filename, current_image.Name, "you cna change the file name");
             DataFieldUC titleUC = new DataFieldUC("Title", title, "The title is most commonly the name of the image/song/episode or movie.");
             DataFieldUC descriptionUC = new DataFieldUC("Description", description, "A brief description of the object.\nThis is most common and usefull for movies");
             DataFieldUC commentUC = new DataFieldUC("Comments", comment, "This field should be used to store user notes and comments. There is no constraint on the text stored here.");
             DataFieldUC dateUC = new DataFieldUC("Date Tagged", date, "the date at which the tag has beenwritten");
 
-            tableLayoutPanel.Controls.Add(titleUC, 1, 1);
-            tableLayoutPanel.Controls.Add(descriptionUC, 1, 2);
-            tableLayoutPanel.Controls.Add(commentUC, 1, 3);
-            tableLayoutPanel.Controls.Add(dateUC, 1, 4);
 
+            tableLayoutPanel.Controls.Add(filenameUC, 1, 1);
+            tableLayoutPanel.Controls.Add(titleUC, 1, 2);
+            tableLayoutPanel.Controls.Add(descriptionUC, 1, 3);
+            tableLayoutPanel.Controls.Add(commentUC, 1, 4);
+            tableLayoutPanel.Controls.Add(dateUC, 1, 5);
         }
+
 
         private string checkNull(string str)
         {
@@ -145,33 +157,75 @@ namespace ImageMetaEditor.Forms
 
         private void btnSaveData_Click(object sender, EventArgs e)
         {
+            SetNewFields();
+        }
+        private void SetNewFields()
+        {
             foreach (Control control in tableLayoutPanel.Controls)
             {
-                if (control.Name == "DataFieldUC")
+                DataFieldUC? dfu = control as DataFieldUC;
+                if (dfu != null)
                 {
-                    DataFieldUC? dfu = control as DataFieldUC;
-                    if (dfu != null)
+                    string control_title = dfu.GetName();
+                    switch (control_title)
                     {
-                        string control_title = dfu.GetTitle();
-                        switch (control_title)
-                        {
-                            case "Title":
-                                image_file.Tag.Title = (string)dfu.GetNewValues();
-                                break;
-                            case "Description":
-                                image_file.Tag.Description = (string)dfu.GetNewValues();
-                                break;
-                            case "Comments":
-                                image_file.Tag.Comment = (string)dfu.GetNewValues();
-                                break;
-                            case "Date Tagged":
-                                image_file.Tag.DateTagged = (DateTime)dfu.GetNewValues();
-                                break;
-                        }
+                        //case "File Name":
+                        //    RenameFile((string)dfu.GetNewValues(), dfu.GetTag().ToString());
+                        //    break;
+                        case "Title":
+                            string title = (string)dfu.GetNewValues();
+                            current_image.Tag.Title = title;
+                            break;
+                        case "Description":
+                            string description = (string)dfu.GetNewValues();
+                            current_image.Tag.Description = description;
+                            break;
+                        case "Comments":
+                            string comment = (string)dfu.GetNewValues();
+                            current_image.Tag.Comment = comment;
+                            break;
+                        case "Date Tagged":
+                            current_image.Tag.DateTagged = (DateTime)dfu.GetNewValues();
+                            break;
                     }
                 }
             }
-            image_file.Save();
+            try
+            {
+                current_image.Save();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void RenameFile(string new_file_name, string file_full_path)
+        {
+            string path = Path.GetDirectoryName(file_full_path);
+            string old_file_name = Path.GetFileNameWithoutExtension(file_full_path);
+            string extension = Path.GetExtension(file_full_path).ToUpper();
+
+            if (old_file_name != new_file_name)
+            {
+                if (ImageExtensions.Contains(extension))
+                {
+                    FileInfo fileInfo = new FileInfo(file_full_path);
+                    string new_file = $"{path}\\{new_file_name}{extension.ToLower()}";
+                    string copy = "";
+                    while (System.IO.File.Exists(new_file))
+                    {
+                        copy += "(_copy_)";
+                        new_file = $"{path}\\{new_file_name}{copy}{extension.ToLower()}";
+                    }
+                       
+
+                    fileInfo.CopyTo(new_file); //MoveTo 
+                    current_image = TagLib.File.Create(new_file);
+                    //if (System.IO.File.Exists(new_file))
+                    //    System.IO.File.Delete(file_full_path);
+                }
+            }
         }
 
         private void treeView_AfterSelect(object sender, TreeViewEventArgs e)
@@ -220,5 +274,9 @@ namespace ImageMetaEditor.Forms
                 LoadDirectory(textBoxPath.Text);
         }
 
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Application.Exit();
+        }
     }
 }

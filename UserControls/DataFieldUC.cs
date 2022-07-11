@@ -14,26 +14,38 @@ namespace ImageMetaEditor.UserControls
     public partial class DataFieldUC : UserControl
     {
         private ToolTip toolTip = new ToolTip();
-        DateTime dt;
+        DateTime? dt = null;
+        object? tag = null;
+
         public DataFieldUC(string field_name, string field_value, string tooltip = "")
         {
             InitializeComponent();
             SetTextBox(field_name, field_value, tooltip);
+            Name = field_name;
         }
 
+        public DataFieldUC(string field_name, string field_value, object tag, string tooltip = "")
+        {
+            InitializeComponent();
+            SetTextBox(field_name, field_value, tooltip);
+            this.tag = tag;
+            Name = field_name;
+        }
 
         public DataFieldUC(string field_name, DateTime? date_tagged, string tooltip = "")
         {
             InitializeComponent();
             SetDateBox(field_name, date_tagged, tooltip);
+            Name = field_name;
         }
 
         private void SetTextBox(string field_name, string field_value, string tooltip = "")
         {
             label_field_name.Text = field_name;
             textBoxfieldText.Text = field_value;
+            List<string> skip = new List<string> { "Title", "File Name" };
 
-            if (field_name != "Title")
+            if (!skip.Contains(field_name))
             {
                 this.textBoxfieldText.Multiline = true;
                 this.textBoxfieldText.Size = new Size(300, 106);
@@ -84,12 +96,17 @@ namespace ImageMetaEditor.UserControls
             return label_field_name.Text;
         }
 
+        public string GetName()
+        {
+            return this.Name;
+        }
+
         public object GetNewValues()
         {
             foreach (Control c in Controls)
             {
                 if (c.Name == "TextBox" || c.Name == "textBoxfieldText")
-                    return this.textBoxfieldText.Text;
+                    return textBoxfieldText.Text;
                 if (c.Name == "DateTimePicker")
                 {
                     DateTimePicker? dtp = c as DateTimePicker;
@@ -98,6 +115,11 @@ namespace ImageMetaEditor.UserControls
                 }
             }
             return null;
+        }
+
+        public object GetTag()
+        {
+            return this.tag;
         }
     }
 }
