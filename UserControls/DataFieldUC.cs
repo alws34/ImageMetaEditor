@@ -14,31 +14,42 @@ namespace ImageMetaEditor.UserControls
     public partial class DataFieldUC : UserControl
     {
         private ToolTip toolTip = new ToolTip();
-        DateTimePicker dtp = new DateTimePicker();
+        DateTime dt;
         public DataFieldUC(string field_name, string field_value, string tooltip = "")
         {
             InitializeComponent();
-            setTitle(this.label_field_name, field_name);
-            textBoxfieldText.Text = field_value;
+            SetTextBox(field_name, field_value, tooltip);
+        }
 
-            SetToolTip(textBoxfieldText, tooltip);
+
+        public DataFieldUC(string field_name, DateTime? date_tagged, string tooltip = "")
+        {
+            InitializeComponent();
+            SetDateBox(field_name, date_tagged, tooltip);
+        }
+
+        private void SetTextBox(string field_name, string field_value, string tooltip = "")
+        {
+            label_field_name.Text = field_name;
+            textBoxfieldText.Text = field_value;
 
             if (field_name != "Title")
             {
                 this.textBoxfieldText.Multiline = true;
-                this.textBoxfieldText.Size = new Size(233, 106);
+                this.textBoxfieldText.Size = new Size(300, 106);
                 this.textBoxfieldText.Location = new Point(3, 27);
-                this.Size = new Size(242, 140);
+                this.Size = new Size(305, 140);
             }
-
+            SetToolTip(textBoxfieldText, tooltip);
         }
-        public DataFieldUC(string field_name, DateTime? date_tagged, string tooltip = "")
+
+        private void SetDateBox(string field_name, DateTime? date_tagged, string tooltip = "")
         {
-            InitializeComponent();
-            setTitle(this.label_field_name, field_name);
+            label_field_name.Text = field_name;
             if (field_name.Contains("Date"))
             {
-                Size size = new Size(233, 31);
+                DateTimePicker dtp = new DateTimePicker();
+                Size size = new Size(300, 31);
                 Point location = new Point(3, 27);
                 this.Controls.Remove(textBoxfieldText);
                 if (date_tagged.HasValue)
@@ -47,8 +58,20 @@ namespace ImageMetaEditor.UserControls
                     dtp.Value = DateTime.Now;
                 dtp.Location = location;
                 dtp.Size = size;
+                dtp.Name = "DateTimePicker";
+                dtp.ValueChanged += ChangeDateTime;
+                toolTip.SetToolTip(dtp, tooltip);
                 this.Controls.Add(dtp);
             }
+        }
+
+        private void ChangeDateTime(object sender, EventArgs e)
+        {
+            DateTimePicker? dtp = sender as DateTimePicker;
+            if (dtp != null)
+                dt = dtp.Value;
+            else
+                dt = DateTime.Now;
         }
 
         private void SetToolTip(Control control, string caption)
@@ -56,18 +79,25 @@ namespace ImageMetaEditor.UserControls
             toolTip.SetToolTip(control, caption);
         }
 
-        private void setTitle(Control c, string title)
+        public string GetTitle()
         {
-            c.Text = title;
+            return label_field_name.Text;
         }
 
-        public string GetNewValue()
+        public object GetNewValues()
         {
-            return this.textBoxfieldText.Text;
-        }
-        public DateTime GetNewTagDate()
-        {
-            return this.dtp.Value;
+            foreach (Control c in Controls)
+            {
+                if (c.Name == "TextBox" || c.Name == "textBoxfieldText")
+                    return this.textBoxfieldText.Text;
+                if (c.Name == "DateTimePicker")
+                {
+                    DateTimePicker? dtp = c as DateTimePicker;
+                    if (dtp != null)
+                        return dtp.Value;
+                }
+            }
+            return null;
         }
     }
 }

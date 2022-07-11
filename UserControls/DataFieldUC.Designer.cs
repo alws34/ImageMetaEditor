@@ -36,7 +36,7 @@
             // 
             this.textBoxfieldText.Location = new System.Drawing.Point(3, 27);
             this.textBoxfieldText.Name = "textBoxfieldText";
-            this.textBoxfieldText.Size = new System.Drawing.Size(233, 31);
+            this.textBoxfieldText.Size = new System.Drawing.Size(304, 31);
             this.textBoxfieldText.TabIndex = 0;
             // 
             // label_field_name
@@ -55,7 +55,7 @@
             this.Controls.Add(this.label_field_name);
             this.Controls.Add(this.textBoxfieldText);
             this.Name = "DataFieldUC";
-            this.Size = new System.Drawing.Size(242, 64);
+            this.Size = new System.Drawing.Size(310, 64);
             this.ResumeLayout(false);
             this.PerformLayout();
 
