@@ -31,7 +31,7 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tabControl = new System.Windows.Forms.TabControl();
             this.tabPageImages = new System.Windows.Forms.TabPage();
             this.panelImage = new System.Windows.Forms.Panel();
             this.tableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
@@ -45,25 +45,25 @@
             this.lblAuthor = new System.Windows.Forms.Label();
             this.lblVersion = new System.Windows.Forms.Label();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
-            this.tabControl1.SuspendLayout();
+            this.tabControl.SuspendLayout();
             this.tabPageImages.SuspendLayout();
             this.panelImage.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
             this.tabPageAbout.SuspendLayout();
             this.SuspendLayout();
             // 
-            // tabControl1
+            // tabControl
             // 
-            this.tabControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.tabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.tabControl1.Controls.Add(this.tabPageImages);
-            this.tabControl1.Controls.Add(this.tabPageAbout);
-            this.tabControl1.Location = new System.Drawing.Point(11, 12);
-            this.tabControl1.Name = "tabControl1";
-            this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(1579, 771);
-            this.tabControl1.TabIndex = 4;
+            this.tabControl.Controls.Add(this.tabPageImages);
+            this.tabControl.Controls.Add(this.tabPageAbout);
+            this.tabControl.Location = new System.Drawing.Point(11, 12);
+            this.tabControl.Name = "tabControl";
+            this.tabControl.SelectedIndex = 0;
+            this.tabControl.Size = new System.Drawing.Size(1579, 771);
+            this.tabControl.TabIndex = 4;
             // 
             // tabPageImages
             // 
@@ -97,14 +97,14 @@
             // 
             this.tableLayoutPanel.ColumnCount = 1;
             this.tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel.Location = new System.Drawing.Point(11, 3);
+            this.tableLayoutPanel.Location = new System.Drawing.Point(3, 3);
             this.tableLayoutPanel.Name = "tableLayoutPanel";
             this.tableLayoutPanel.RowCount = 4;
             this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel.Size = new System.Drawing.Size(310, 644);
+            this.tableLayoutPanel.Size = new System.Drawing.Size(318, 644);
             this.tableLayoutPanel.TabIndex = 3;
             // 
             // btnSaveData
@@ -128,12 +128,16 @@
             this.pictureBox.Size = new System.Drawing.Size(649, 716);
             this.pictureBox.TabIndex = 0;
             this.pictureBox.TabStop = false;
+            this.pictureBox.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox_Paint);
+            this.pictureBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictureBox_MouseDown);
+            this.pictureBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pictureBox_MouseMove);
+            this.pictureBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pictureBox_MouseUp);
             // 
             // progressBar
             // 
             this.progressBar.Location = new System.Drawing.Point(6, 43);
             this.progressBar.Name = "progressBar";
-            this.progressBar.Size = new System.Drawing.Size(573, 33);
+            this.progressBar.Size = new System.Drawing.Size(572, 33);
             this.progressBar.TabIndex = 7;
             // 
             // treeView
@@ -142,7 +146,7 @@
             | System.Windows.Forms.AnchorStyles.Left)));
             this.treeView.Location = new System.Drawing.Point(6, 83);
             this.treeView.Name = "treeView";
-            this.treeView.Size = new System.Drawing.Size(573, 645);
+            this.treeView.Size = new System.Drawing.Size(572, 645);
             this.treeView.TabIndex = 6;
             this.treeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView_AfterSelect);
             // 
@@ -210,12 +214,12 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1598, 784);
-            this.Controls.Add(this.tabControl1);
+            this.Controls.Add(this.tabControl);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainForm";
             this.Text = "Metadata Editor";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
-            this.tabControl1.ResumeLayout(false);
+            this.tabControl.ResumeLayout(false);
             this.tabPageImages.ResumeLayout(false);
             this.tabPageImages.PerformLayout();
             this.panelImage.ResumeLayout(false);
@@ -228,7 +232,7 @@
 
         #endregion
         private ToolTip toolTip;
-        private TabControl tabControl1;
+        private TabControl tabControl;
         private TabPage tabPageImages;
         private ProgressBar progressBar;
         private TreeView treeView;

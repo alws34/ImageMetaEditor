@@ -19,6 +19,14 @@ namespace ImageMetaEditor.Forms
     {
         private static readonly List<string> ImageExtensions = new List<string> { ".JPG", ".JPEG", ".JPE", ".BMP", ".GIF", ".PNG" };
         private TagLib.File current_image = TagLib.File.Create("sample_image.jpg");
+        
+        private bool isMouseDown = false;
+        public List<Rectangle> listRec = new List<Rectangle>();
+        Graphics g;
+        Rectangle rect = new Rectangle();
+        Point locationXY; //start
+        Point locationX1Y1; //end
+
         private enum TABS
         {
             ImageTab,
@@ -28,14 +36,16 @@ namespace ImageMetaEditor.Forms
         public MainForm()
         {
             InitializeComponent();
-            tabControl1.SelectedIndexChanged += ResizeWindow;
+            tabControl.SelectedIndexChanged += ResizeWindow;
             SetAbout();
+            pictureBox.SizeMode = PictureBoxSizeMode.StretchImage;
+
         }
 
         private void SetAbout(string version = "0.6.1")
         {
-            lblVersion.Text = $"Version: {version}";
-            lblAuthor.Text = "alws34";
+            lblVersion.Text = $"Version:\t{version}";
+            lblAuthor.Text = "Author:\talws34";
             richTextBox1.Text = $"";
         }
 
@@ -49,6 +59,7 @@ namespace ImageMetaEditor.Forms
             tds.StateImageIndex = 0;
             LoadFiles(Dir, tds);
             LoadSubDirectories(Dir, tds);
+            progressBar.Value = 0;
         }
 
         private void LoadSubDirectories(string dir, TreeNode td)
@@ -99,11 +110,11 @@ namespace ImageMetaEditor.Forms
 
         private void displayImage(string image_path)
         {
+            listRec.Clear()
+
             using (FileStream fs = new FileStream(image_path, FileMode.Open, FileAccess.Read))
-            {
                 pictureBox.Image = Image.FromStream(fs);
-                pictureBox.SizeMode = PictureBoxSizeMode.StretchImage;
-            }
+
             current_image = TagLib.File.Create(image_path);
             imageFieldsHandler(current_image);
         }
@@ -139,7 +150,6 @@ namespace ImageMetaEditor.Forms
             tableLayoutPanel.Controls.Add(commentUC, 1, 4);
             tableLayoutPanel.Controls.Add(dateUC, 1, 5);
         }
-
 
         private string checkNull(string str)
         {
@@ -218,7 +228,7 @@ namespace ImageMetaEditor.Forms
                         copy += "(_copy_)";
                         new_file = $"{path}\\{new_file_name}{copy}{extension.ToLower()}";
                     }
-                       
+
 
                     fileInfo.CopyTo(new_file); //MoveTo 
                     current_image = TagLib.File.Create(new_file);
@@ -226,6 +236,16 @@ namespace ImageMetaEditor.Forms
                     //    System.IO.File.Delete(file_full_path);
                 }
             }
+        }
+
+        private Rectangle GetRect()
+        {
+            rect = new Rectangle();
+            rect.X = Math.Min(locationXY.X, locationX1Y1.X);
+            rect.Y = Math.Min(locationXY.Y, locationX1Y1.Y);
+            rect.Width = Math.Abs(locationXY.X - locationX1Y1.X);
+            rect.Height = Math.Abs(locationXY.Y - locationX1Y1.Y);
+            return rect;
         }
 
         private void treeView_AfterSelect(object sender, TreeViewEventArgs e)
@@ -243,7 +263,7 @@ namespace ImageMetaEditor.Forms
 
         private void ResizeWindow(object sender, EventArgs e)
         {
-            if (tabControl1.SelectedIndex == (int)TABS.AboutTab)
+            if (tabControl.SelectedIndex == (int)TABS.AboutTab)
                 Size = new Size(650, 835);
             else
                 Size = new Size(1620, 840);
@@ -278,5 +298,41 @@ namespace ImageMetaEditor.Forms
         {
             Application.Exit();
         }
+
+        private void pictureBox_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button != MouseButtons.Left) return;
+            isMouseDown = true;
+            locationXY = e.Location;
+        }
+
+        private void pictureBox_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (isMouseDown)
+            {
+                locationX1Y1 = e.Location;
+                pictureBox.Refresh();
+            }
+        }
+
+        private void pictureBox_MouseUp(object sender, MouseEventArgs e)
+        {
+            isMouseDown = false;
+            locationX1Y1 = e.Location;
+            Rectangle r = GetRect();//get current drawn rectangle
+
+            if(!listRec.Contains(r))
+                listRec.Add(r);
+        }
+
+        private void pictureBox_Paint(object sender, PaintEventArgs e)
+        {
+            Rectangle r = GetRect(); //get dynamically drawn rectangle
+            e.Graphics.DrawRectangle(new Pen(Color.Red, 2f), r); // draw it
+
+            foreach (Rectangle rec in listRec) //redraw all drawn rectangles at their position
+                e.Graphics.DrawRectangle(new Pen(Color.Red, 2f), rec);
+        }
+
     }
 }
