@@ -34,6 +34,12 @@
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabPageImages = new System.Windows.Forms.TabPage();
             this.panelImage = new System.Windows.Forms.Panel();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.btnColorPicker = new System.Windows.Forms.Button();
+            this.button5 = new System.Windows.Forms.Button();
+            this.button4 = new System.Windows.Forms.Button();
+            this.button3 = new System.Windows.Forms.Button();
+            this.button2 = new System.Windows.Forms.Button();
             this.tableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
             this.btnSaveData = new System.Windows.Forms.Button();
             this.pictureBox = new System.Windows.Forms.PictureBox();
@@ -45,9 +51,11 @@
             this.lblAuthor = new System.Windows.Forms.Label();
             this.lblVersion = new System.Windows.Forms.Label();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
+            this.colorPickDialog = new System.Windows.Forms.ColorDialog();
             this.tabControl.SuspendLayout();
             this.tabPageImages.SuspendLayout();
             this.panelImage.SuspendLayout();
+            this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
             this.tabPageAbout.SuspendLayout();
             this.SuspendLayout();
@@ -85,6 +93,7 @@
             this.panelImage.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.panelImage.Controls.Add(this.panel1);
             this.panelImage.Controls.Add(this.tableLayoutPanel);
             this.panelImage.Controls.Add(this.btnSaveData);
             this.panelImage.Controls.Add(this.pictureBox);
@@ -92,6 +101,65 @@
             this.panelImage.Name = "panelImage";
             this.panelImage.Size = new System.Drawing.Size(981, 721);
             this.panelImage.TabIndex = 8;
+            // 
+            // panel1
+            // 
+            this.panel1.Controls.Add(this.btnColorPicker);
+            this.panel1.Controls.Add(this.button5);
+            this.panel1.Controls.Add(this.button4);
+            this.panel1.Controls.Add(this.button3);
+            this.panel1.Controls.Add(this.button2);
+            this.panel1.Location = new System.Drawing.Point(329, 3);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(649, 67);
+            this.panel1.TabIndex = 4;
+            // 
+            // btnColorPicker
+            // 
+            this.btnColorPicker.BackColor = System.Drawing.Color.White;
+            this.btnColorPicker.Location = new System.Drawing.Point(2, 3);
+            this.btnColorPicker.Name = "btnColorPicker";
+            this.btnColorPicker.Size = new System.Drawing.Size(116, 61);
+            this.btnColorPicker.TabIndex = 10;
+            this.btnColorPicker.Text = "Color";
+            this.btnColorPicker.UseVisualStyleBackColor = false;
+            this.btnColorPicker.Click += new System.EventHandler(this.btnColorPicker_Click);
+            // 
+            // button5
+            // 
+            this.button5.Location = new System.Drawing.Point(530, 3);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(116, 61);
+            this.button5.TabIndex = 9;
+            this.button5.Text = "button5";
+            this.button5.UseVisualStyleBackColor = true;
+            // 
+            // button4
+            // 
+            this.button4.Location = new System.Drawing.Point(398, 3);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(116, 61);
+            this.button4.TabIndex = 8;
+            this.button4.Text = "button4";
+            this.button4.UseVisualStyleBackColor = true;
+            // 
+            // button3
+            // 
+            this.button3.Location = new System.Drawing.Point(264, 3);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(116, 61);
+            this.button3.TabIndex = 7;
+            this.button3.Text = "button3";
+            this.button3.UseVisualStyleBackColor = true;
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(133, 3);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(116, 61);
+            this.button2.TabIndex = 6;
+            this.button2.Text = "button2";
+            this.button2.UseVisualStyleBackColor = true;
             // 
             // tableLayoutPanel
             // 
@@ -123,9 +191,9 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.pictureBox.BackColor = System.Drawing.Color.Transparent;
-            this.pictureBox.Location = new System.Drawing.Point(329, 3);
+            this.pictureBox.Location = new System.Drawing.Point(329, 76);
             this.pictureBox.Name = "pictureBox";
-            this.pictureBox.Size = new System.Drawing.Size(649, 716);
+            this.pictureBox.Size = new System.Drawing.Size(649, 643);
             this.pictureBox.TabIndex = 0;
             this.pictureBox.TabStop = false;
             this.pictureBox.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox_Paint);
@@ -223,6 +291,7 @@
             this.tabPageImages.ResumeLayout(false);
             this.tabPageImages.PerformLayout();
             this.panelImage.ResumeLayout(false);
+            this.panel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).EndInit();
             this.tabPageAbout.ResumeLayout(false);
             this.tabPageAbout.PerformLayout();
@@ -246,5 +315,12 @@
         private RichTextBox richTextBox1;
         private Label lblAuthor;
         private Label lblVersion;
+        private Panel panel1;
+        private Button button5;
+        private Button button4;
+        private Button button3;
+        private Button button2;
+        private ColorDialog colorPickDialog;
+        private Button btnColorPicker;
     }
 }

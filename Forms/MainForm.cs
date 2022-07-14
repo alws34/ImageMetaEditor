@@ -11,6 +11,8 @@ using System.IO;
 using TagLib;
 using System.Media;
 using ImageMetaEditor.UserControls;
+using ImageMetaEditor.Classes;
+
 
 namespace ImageMetaEditor.Forms
 {
@@ -19,14 +21,15 @@ namespace ImageMetaEditor.Forms
     {
         private static readonly List<string> ImageExtensions = new List<string> { ".JPG", ".JPEG", ".JPE", ".BMP", ".GIF", ".PNG" };
         private TagLib.File current_image = TagLib.File.Create("sample_image.jpg");
-        
+
         private bool isMouseDown = false;
-        public List<Rectangle> listRec = new List<Rectangle>();
+        public List<CustomRectangle> rectangles_lst = new List<CustomRectangle>();
+        private List<int> rectangles_ids = new List<int>();
         Graphics g;
         Rectangle rect = new Rectangle();
-        Point locationXY; //start
-        Point locationX1Y1; //end
-
+        Point location_start_position;
+        Point location_end_position;
+        Pen current_pen = new Pen(Color.Yellow, 3f);
         private enum TABS
         {
             ImageTab,
@@ -36,10 +39,9 @@ namespace ImageMetaEditor.Forms
         public MainForm()
         {
             InitializeComponent();
-            tabControl.SelectedIndexChanged += ResizeWindow;
             SetAbout();
+            tabControl.SelectedIndexChanged += ResizeWindow;
             pictureBox.SizeMode = PictureBoxSizeMode.StretchImage;
-
         }
 
         private void SetAbout(string version = "0.6.1")
@@ -110,7 +112,7 @@ namespace ImageMetaEditor.Forms
 
         private void displayImage(string image_path)
         {
-            listRec.Clear()
+            rectangles_lst.Clear();
 
             using (FileStream fs = new FileStream(image_path, FileMode.Open, FileAccess.Read))
                 pictureBox.Image = Image.FromStream(fs);
@@ -169,6 +171,7 @@ namespace ImageMetaEditor.Forms
         {
             SetNewFields();
         }
+
         private void SetNewFields()
         {
             foreach (Control control in tableLayoutPanel.Controls)
@@ -238,14 +241,25 @@ namespace ImageMetaEditor.Forms
             }
         }
 
-        private Rectangle GetRect()
+        private Rectangle GetCurrentDrawnRec()
         {
             rect = new Rectangle();
-            rect.X = Math.Min(locationXY.X, locationX1Y1.X);
-            rect.Y = Math.Min(locationXY.Y, locationX1Y1.Y);
-            rect.Width = Math.Abs(locationXY.X - locationX1Y1.X);
-            rect.Height = Math.Abs(locationXY.Y - locationX1Y1.Y);
+            rect.X = Math.Min(location_start_position.X, location_end_position.X);
+            rect.Y = Math.Min(location_start_position.Y, location_end_position.Y);
+            rect.Width = Math.Abs(location_start_position.X - location_end_position.X);
+            rect.Height = Math.Abs(location_start_position.Y - location_end_position.Y);
+
             return rect;
+        }
+
+        private int GetRectangleID()
+        {
+            Random rand = new Random();
+            int id = rand.Next(int.MaxValue);
+            while (rectangles_ids.Contains(id))//avoid duplicates
+                id = rand.Next(int.MaxValue);
+            rectangles_ids.Add(id);
+            return id;
         }
 
         private void treeView_AfterSelect(object sender, TreeViewEventArgs e)
@@ -257,14 +271,14 @@ namespace ImageMetaEditor.Forms
             TreeNode tree_node = tree_view.SelectedNode;
             string node_text = tree_node.Text;
             if (ImageExtensions.Contains(Path.GetExtension(node_text).ToUpperInvariant()))
-                displayImage(tree_node.Tag.ToString());
+                displayImage((string)tree_node.Tag);
 
         }
 
         private void ResizeWindow(object sender, EventArgs e)
         {
             if (tabControl.SelectedIndex == (int)TABS.AboutTab)
-                Size = new Size(650, 835);
+                Size = new Size(650, 840);
             else
                 Size = new Size(1620, 840);
         }
@@ -303,14 +317,14 @@ namespace ImageMetaEditor.Forms
         {
             if (e.Button != MouseButtons.Left) return;
             isMouseDown = true;
-            locationXY = e.Location;
+            location_start_position = e.Location;
         }
 
         private void pictureBox_MouseMove(object sender, MouseEventArgs e)
         {
             if (isMouseDown)
             {
-                locationX1Y1 = e.Location;
+                location_end_position = e.Location;
                 pictureBox.Refresh();
             }
         }
@@ -318,21 +332,31 @@ namespace ImageMetaEditor.Forms
         private void pictureBox_MouseUp(object sender, MouseEventArgs e)
         {
             isMouseDown = false;
-            locationX1Y1 = e.Location;
-            Rectangle r = GetRect();//get current drawn rectangle
+            location_end_position = e.Location;
 
-            if(!listRec.Contains(r))
-                listRec.Add(r);
+            CustomRectangle cr = new CustomRectangle(GetCurrentDrawnRec(), GetRectangleID(), new Pen(current_pen.Color,2f));
+            rectangles_lst.Add(cr);
+        }
+
+        private void clicked(object sender)
+        {
+            int i = 0;
         }
 
         private void pictureBox_Paint(object sender, PaintEventArgs e)
         {
-            Rectangle r = GetRect(); //get dynamically drawn rectangle
-            e.Graphics.DrawRectangle(new Pen(Color.Red, 2f), r); // draw it
+            Rectangle r = GetCurrentDrawnRec(); //get dynamically drawn rectangle
+            e.Graphics.DrawRectangle(current_pen, r); // draw it
 
-            foreach (Rectangle rec in listRec) //redraw all drawn rectangles at their position
-                e.Graphics.DrawRectangle(new Pen(Color.Red, 2f), rec);
+            foreach (CustomRectangle rec in rectangles_lst) //redraw all rectangles at their position
+                e.Graphics.DrawRectangle(rec.Pen, rec.Rec);
         }
 
+        private void btnColorPicker_Click(object sender, EventArgs e)
+        {
+            colorPickDialog.ShowDialog();
+            current_pen.Color = colorPickDialog.Color;
+            btnColorPicker.BackColor = colorPickDialog.Color;
+        }
     }
 }
