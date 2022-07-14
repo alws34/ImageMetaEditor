@@ -39,7 +39,7 @@
             this.button5 = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
+            this.btnUndo = new System.Windows.Forms.Button();
             this.tableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
             this.btnSaveData = new System.Windows.Forms.Button();
             this.pictureBox = new System.Windows.Forms.PictureBox();
@@ -67,10 +67,10 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tabControl.Controls.Add(this.tabPageImages);
             this.tabControl.Controls.Add(this.tabPageAbout);
-            this.tabControl.Location = new System.Drawing.Point(11, 12);
+            this.tabControl.Location = new System.Drawing.Point(-1, 12);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(1579, 771);
+            this.tabControl.Size = new System.Drawing.Size(1588, 928);
             this.tabControl.TabIndex = 4;
             // 
             // tabPageImages
@@ -83,7 +83,7 @@
             this.tabPageImages.Location = new System.Drawing.Point(4, 34);
             this.tabPageImages.Name = "tabPageImages";
             this.tabPageImages.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageImages.Size = new System.Drawing.Size(1571, 733);
+            this.tabPageImages.Size = new System.Drawing.Size(1580, 890);
             this.tabPageImages.TabIndex = 0;
             this.tabPageImages.Text = "Images";
             this.tabPageImages.UseVisualStyleBackColor = true;
@@ -99,7 +99,7 @@
             this.panelImage.Controls.Add(this.pictureBox);
             this.panelImage.Location = new System.Drawing.Point(586, 7);
             this.panelImage.Name = "panelImage";
-            this.panelImage.Size = new System.Drawing.Size(981, 721);
+            this.panelImage.Size = new System.Drawing.Size(990, 878);
             this.panelImage.TabIndex = 8;
             // 
             // panel1
@@ -108,7 +108,7 @@
             this.panel1.Controls.Add(this.button5);
             this.panel1.Controls.Add(this.button4);
             this.panel1.Controls.Add(this.button3);
-            this.panel1.Controls.Add(this.button2);
+            this.panel1.Controls.Add(this.btnUndo);
             this.panel1.Location = new System.Drawing.Point(329, 3);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(649, 67);
@@ -117,6 +117,7 @@
             // btnColorPicker
             // 
             this.btnColorPicker.BackColor = System.Drawing.Color.White;
+            this.btnColorPicker.Font = new System.Drawing.Font("Segoe UI Black", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.btnColorPicker.Location = new System.Drawing.Point(2, 3);
             this.btnColorPicker.Name = "btnColorPicker";
             this.btnColorPicker.Size = new System.Drawing.Size(116, 61);
@@ -127,6 +128,7 @@
             // 
             // button5
             // 
+            this.button5.Font = new System.Drawing.Font("Segoe UI Black", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.button5.Location = new System.Drawing.Point(530, 3);
             this.button5.Name = "button5";
             this.button5.Size = new System.Drawing.Size(116, 61);
@@ -136,6 +138,7 @@
             // 
             // button4
             // 
+            this.button4.Font = new System.Drawing.Font("Segoe UI Black", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.button4.Location = new System.Drawing.Point(398, 3);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(116, 61);
@@ -145,6 +148,7 @@
             // 
             // button3
             // 
+            this.button3.Font = new System.Drawing.Font("Segoe UI Black", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.button3.Location = new System.Drawing.Point(264, 3);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(116, 61);
@@ -152,32 +156,31 @@
             this.button3.Text = "button3";
             this.button3.UseVisualStyleBackColor = true;
             // 
-            // button2
+            // btnUndo
             // 
-            this.button2.Location = new System.Drawing.Point(133, 3);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(116, 61);
-            this.button2.TabIndex = 6;
-            this.button2.Text = "button2";
-            this.button2.UseVisualStyleBackColor = true;
+            this.btnUndo.Font = new System.Drawing.Font("Segoe UI Black", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.btnUndo.Location = new System.Drawing.Point(133, 3);
+            this.btnUndo.Name = "btnUndo";
+            this.btnUndo.Size = new System.Drawing.Size(116, 61);
+            this.btnUndo.TabIndex = 6;
+            this.btnUndo.Text = "Undo";
+            this.btnUndo.UseVisualStyleBackColor = true;
+            this.btnUndo.Click += new System.EventHandler(this.btnUndo_Click);
             // 
             // tableLayoutPanel
             // 
             this.tableLayoutPanel.ColumnCount = 1;
-            this.tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel.Location = new System.Drawing.Point(3, 3);
             this.tableLayoutPanel.Name = "tableLayoutPanel";
-            this.tableLayoutPanel.RowCount = 4;
+            this.tableLayoutPanel.RowCount = 1;
             this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel.Size = new System.Drawing.Size(318, 644);
+            this.tableLayoutPanel.Size = new System.Drawing.Size(318, 810);
             this.tableLayoutPanel.TabIndex = 3;
             // 
             // btnSaveData
             // 
-            this.btnSaveData.Location = new System.Drawing.Point(58, 662);
+            this.btnSaveData.Location = new System.Drawing.Point(54, 821);
             this.btnSaveData.Name = "btnSaveData";
             this.btnSaveData.Size = new System.Drawing.Size(211, 47);
             this.btnSaveData.TabIndex = 2;
@@ -193,7 +196,7 @@
             this.pictureBox.BackColor = System.Drawing.Color.Transparent;
             this.pictureBox.Location = new System.Drawing.Point(329, 76);
             this.pictureBox.Name = "pictureBox";
-            this.pictureBox.Size = new System.Drawing.Size(649, 643);
+            this.pictureBox.Size = new System.Drawing.Size(658, 800);
             this.pictureBox.TabIndex = 0;
             this.pictureBox.TabStop = false;
             this.pictureBox.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox_Paint);
@@ -214,7 +217,7 @@
             | System.Windows.Forms.AnchorStyles.Left)));
             this.treeView.Location = new System.Drawing.Point(6, 83);
             this.treeView.Name = "treeView";
-            this.treeView.Size = new System.Drawing.Size(572, 645);
+            this.treeView.Size = new System.Drawing.Size(572, 802);
             this.treeView.TabIndex = 6;
             this.treeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView_AfterSelect);
             // 
@@ -244,7 +247,7 @@
             this.tabPageAbout.Location = new System.Drawing.Point(4, 34);
             this.tabPageAbout.Name = "tabPageAbout";
             this.tabPageAbout.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageAbout.Size = new System.Drawing.Size(1571, 733);
+            this.tabPageAbout.Size = new System.Drawing.Size(1580, 890);
             this.tabPageAbout.TabIndex = 1;
             this.tabPageAbout.Text = "About";
             this.tabPageAbout.UseVisualStyleBackColor = true;
@@ -271,9 +274,12 @@
             // 
             // richTextBox1
             // 
-            this.richTextBox1.Location = new System.Drawing.Point(27, 179);
+            this.richTextBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.richTextBox1.Location = new System.Drawing.Point(6, 183);
             this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.Size = new System.Drawing.Size(554, 539);
+            this.richTextBox1.Size = new System.Drawing.Size(596, 572);
             this.richTextBox1.TabIndex = 0;
             this.richTextBox1.Text = "";
             // 
@@ -281,10 +287,12 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1598, 784);
+            this.ClientSize = new System.Drawing.Size(1589, 941);
             this.Controls.Add(this.tabControl);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainForm";
+            this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Metadata Editor";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.tabControl.ResumeLayout(false);
@@ -319,7 +327,7 @@
         private Button button5;
         private Button button4;
         private Button button3;
-        private Button button2;
+        private Button btnUndo;
         private ColorDialog colorPickDialog;
         private Button btnColorPicker;
     }

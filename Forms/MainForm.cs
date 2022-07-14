@@ -20,7 +20,10 @@ namespace ImageMetaEditor.Forms
     public partial class MainForm : Form
     {
         private static readonly List<string> ImageExtensions = new List<string> { ".JPG", ".JPEG", ".JPE", ".BMP", ".GIF", ".PNG" };
+        private static readonly int NUM_OF_ROWS = 6; //change this to control amount of DataFieldUC
         private TagLib.File current_image = TagLib.File.Create("sample_image.jpg");
+        private DataFieldUC personUC;
+
 
         private bool isMouseDown = false;
         public List<CustomRectangle> rectangles_lst = new List<CustomRectangle>();
@@ -29,7 +32,7 @@ namespace ImageMetaEditor.Forms
         Rectangle rect = new Rectangle();
         Point location_start_position;
         Point location_end_position;
-        Pen current_pen = new Pen(Color.Yellow, 3f);
+        Pen current_pen = new Pen(Color.White, 2.5f);
         private enum TABS
         {
             ImageTab,
@@ -42,6 +45,8 @@ namespace ImageMetaEditor.Forms
             SetAbout();
             tabControl.SelectedIndexChanged += ResizeWindow;
             pictureBox.SizeMode = PictureBoxSizeMode.StretchImage;
+            btnColorPicker.BackColor = current_pen.Color;
+            //pictureBox.Enabled = false;
         }
 
         private void SetAbout(string version = "0.6.1")
@@ -130,27 +135,31 @@ namespace ImageMetaEditor.Forms
 
         private void SetFields()
         {
-            tableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.AutoSize, 33)); //row 5
+            //pictureBox.Enabled = true;
+
+            for (int i = 0; i < NUM_OF_ROWS; i++)
+                tableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.AutoSize, 33));
+
 
             string filename = checkNull(Path.GetFileNameWithoutExtension(current_image.Name));
             string title = checkNull(current_image.Tag.Title);
             string description = checkNull(current_image.Tag.Description);
             string comment = checkNull(current_image.Tag.Comment);
             DateTime? date = checkNull(current_image.Tag.DateTagged);
+            personUC = new DataFieldUC("Person", "Enter person's name");
 
-            //tableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Absolute,65));//add more rows.
-            DataFieldUC filenameUC = new DataFieldUC("File Name", filename, current_image.Name, "you cna change the file name");
-            DataFieldUC titleUC = new DataFieldUC("Title", title, "The title is most commonly the name of the image/song/episode or movie.");
-            DataFieldUC descriptionUC = new DataFieldUC("Description", description, "A brief description of the object.\nThis is most common and usefull for movies");
-            DataFieldUC commentUC = new DataFieldUC("Comments", comment, "This field should be used to store user notes and comments. There is no constraint on the text stored here.");
-            DataFieldUC dateUC = new DataFieldUC("Date Tagged", date, "the date at which the tag has beenwritten");
+            DataFieldUC[] dfu_list =
+            {
+                new DataFieldUC("File Name", filename, current_image.Name, "you cna change the file name"),
+                new DataFieldUC("Title", title, "The title is most commonly the name of the image/song/episode or movie."),
+                new DataFieldUC("Description", description, "A brief description of the object.\nThis is most common and usefull for movies"),
+                new DataFieldUC("Comments", comment, "This field should be used to store user notes and comments. There is no constraint on the text stored here."),
+                new DataFieldUC("Date Tagged", date, "the date at which the tag has beenwritten"),
+                personUC
+            };
 
-
-            tableLayoutPanel.Controls.Add(filenameUC, 1, 1);
-            tableLayoutPanel.Controls.Add(titleUC, 1, 2);
-            tableLayoutPanel.Controls.Add(descriptionUC, 1, 3);
-            tableLayoutPanel.Controls.Add(commentUC, 1, 4);
-            tableLayoutPanel.Controls.Add(dateUC, 1, 5);
+            for (int i = 0; i < dfu_list.Length; i++)
+                tableLayoutPanel.Controls.Add(dfu_list[i], 1, i + 1);
         }
 
         private string checkNull(string str)
@@ -199,6 +208,9 @@ namespace ImageMetaEditor.Forms
                             break;
                         case "Date Tagged":
                             current_image.Tag.DateTagged = (DateTime)dfu.GetNewValues();
+                            break;
+                        case "Person":
+
                             break;
                     }
                 }
@@ -261,7 +273,13 @@ namespace ImageMetaEditor.Forms
             rectangles_ids.Add(id);
             return id;
         }
-
+        
+        private Color GenerateRandomColor()
+        {
+            Random r = new Random();
+            return Color.FromArgb(r.Next(0, 256), r.Next(0, 256), r.Next(0, 256));
+        }
+      
         private void treeView_AfterSelect(object sender, TreeViewEventArgs e)
         {
             TreeView? tree_view = sender as TreeView;
@@ -324,6 +342,7 @@ namespace ImageMetaEditor.Forms
         {
             if (isMouseDown)
             {
+                personUC.SetBackgroundColor(Color.White);
                 location_end_position = e.Location;
                 pictureBox.Refresh();
             }
@@ -333,15 +352,16 @@ namespace ImageMetaEditor.Forms
         {
             isMouseDown = false;
             location_end_position = e.Location;
+            CustomRectangle m = new CustomRectangle(GetCurrentDrawnRec(), GetRectangleID(), new Pen(current_pen.Color, 2f));
+            rectangles_lst.Add(m);
+            //pictureBox.Enabled = false;
+            Color c = GenerateRandomColor();
+            current_pen.Color = c;
+            btnColorPicker.BackColor = c;
+            personUC.SetBackgroundColor(Color.Yellow);
 
-            CustomRectangle cr = new CustomRectangle(GetCurrentDrawnRec(), GetRectangleID(), new Pen(current_pen.Color,2f));
-            rectangles_lst.Add(cr);
         }
 
-        private void clicked(object sender)
-        {
-            int i = 0;
-        }
 
         private void pictureBox_Paint(object sender, PaintEventArgs e)
         {
@@ -350,13 +370,21 @@ namespace ImageMetaEditor.Forms
 
             foreach (CustomRectangle rec in rectangles_lst) //redraw all rectangles at their position
                 e.Graphics.DrawRectangle(rec.Pen, rec.Rec);
+            //richTextBox1.Text = rec.ToString().Replace("[-]","");
         }
+
 
         private void btnColorPicker_Click(object sender, EventArgs e)
         {
             colorPickDialog.ShowDialog();
             current_pen.Color = colorPickDialog.Color;
             btnColorPicker.BackColor = colorPickDialog.Color;
+        }
+
+
+        private void btnUndo_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

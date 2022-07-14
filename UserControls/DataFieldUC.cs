@@ -17,17 +17,17 @@ namespace ImageMetaEditor.UserControls
         DateTime? dt = null;
         object? tag = null;
 
-        public DataFieldUC(string field_name, string field_value, string tooltip = "")
+        public DataFieldUC(string field_name, string field_value, string tooltip)
         {
             InitializeComponent();
-            SetTextBox(field_name, field_value, tooltip);
+            SetTextBox(field_name, field_value, true, tooltip);
             Name = field_name;
         }
 
         public DataFieldUC(string field_name, string field_value, object tag, string tooltip = "")
         {
             InitializeComponent();
-            SetTextBox(field_name, field_value, tooltip);
+            SetTextBox(field_name, field_value, true, tooltip);
             this.tag = tag;
             Name = field_name;
         }
@@ -39,19 +39,29 @@ namespace ImageMetaEditor.UserControls
             Name = field_name;
         }
 
-        private void SetTextBox(string field_name, string field_value, string tooltip = "")
+        public DataFieldUC(string field_name, string tooltip)
+        {
+            InitializeComponent();
+            SetTextBox(field_name, "", false, tooltip);
+        }
+
+        private void SetTextBox(string field_name, string field_value, bool regular = false, string tooltip = "")
         {
             label_field_name.Text = field_name;
             textBoxfieldText.Text = field_value;
             List<string> skip = new List<string> { "Title", "File Name" };
 
-            if (!skip.Contains(field_name))
+            if (regular)
             {
-                this.textBoxfieldText.Multiline = true;
-                this.textBoxfieldText.Size = new Size(300, 106);
-                this.textBoxfieldText.Location = new Point(3, 27);
-                this.Size = new Size(305, 140);
+                if (!skip.Contains(field_name))
+                {
+                    this.textBoxfieldText.Multiline = true;
+                    this.textBoxfieldText.Size = new Size(300, 106);
+                    this.textBoxfieldText.Location = new Point(3, 27);
+                    this.Size = new Size(305, 140);
+                }
             }
+
             SetToolTip(textBoxfieldText, tooltip);
         }
 
@@ -115,6 +125,11 @@ namespace ImageMetaEditor.UserControls
                 }
             }
             return null;
+        }
+
+        public void SetBackgroundColor(Color c)
+        {
+            textBoxfieldText.BackColor = c;
         }
 
         public object GetTag()
